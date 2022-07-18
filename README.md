@@ -1,5 +1,14 @@
-# nodejs-gitops
-GitOps stuff for the example nodejs app
+# DevSecOps
+
+Install and configure the basic OpenShift operators needed for `DevSecOps`.
+
+This will install the following operators:
+
+* Red Hat OpenShift GitOps
+* Red Hat OpenShift Pipelines
+* Red Hat Quay
+* Red Hat Quay Bridge Operator
+* Red Hat Quay Conatiner Security Operator
 
 ## Preparation
 
@@ -9,7 +18,7 @@ Install the ODF operator following the instructions [here](https://access.redhat
 
 Create a `StorageSystem`.
 
-### Install the operators
+## Install the operators
 
 Subscribe to the operators:
 
@@ -83,7 +92,7 @@ oc apply -n openshift-operators -f quay/quay-integration.yaml
 See [https://github.com/quay/quay-bridge-operator](https://github.com/quay/quay-bridge-operator) for more details on the operator.
 
 
-#### Deploy the Quay Container Security Operator
+### Deploy the Quay Container Security Operator
 
 ```shell
 oc apply -f operator/openshift-quay-security-operator.yaml
