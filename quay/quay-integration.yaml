@@ -1,0 +1,10 @@
+apiVersion: quay.redhat.com/v1
+kind: QuayIntegration
+metadata:
+  name: quay-registry-integration
+spec:
+  clusterID: openshift
+  credentialsSecret:
+    namespace: openshift-operators
+    name: quay-integration
+  quayHostname: <QUAY_ROUTE>
