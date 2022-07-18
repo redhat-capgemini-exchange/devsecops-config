@@ -59,26 +59,27 @@ oc get quayregistry -n openshift-operators quay-registry -o jsonpath="{.status.r
 ```shell
 export QUAY_ENDPOINT=https://quay-registry-.... 
 
-curl -X POST -k  "$QUAY_ENDPOINT/api/v1/user/initialize" --header 'Content-Type: application/json' --data '{ "username": "quayadmin", "password":"quaypass123", "email": "quayadmin@example.com", "access_token": true}'
+curl -X POST -k  "$QUAY_ENDPOINT/api/v1/user/initialize" \
+    --header 'Content-Type: application/json' \
+    --data '{ "username": "quayadmin", "password":"quaypass123", "email": "quayadmin@example.com", "access_token": true}'
 
 ```
 
-Make a note of the `access token`.
-
 #### Configure the Quay Bridge
 
-Log into Quay as the admin user (see above).
+Log into Quay as the admin user (quayadmin@quaypass123).
 
 Create a `new organization` (gitopshq).
 
 Create a new `application` within the organization (quay-bridge). 
 
-Create a `Access Token` for the application. Give it full rights to the organization.
+Create an `Access Token` for the application. Give it full rights to the organization.
 
 Create a secret with the above access token:
 
 ```shell
-oc create secret -n openshift-operators generic quay-integration --from-literal=token=<access_token>
+oc create secret -n openshift-operators generic quay-integration \
+    --from-literal=token=<access_token>
 ```
 
 Update `quay/quay-integration.yaml` with the actual Quay instance endpoint.
