@@ -1,4 +1,4 @@
-FROM ubi8/s2i-core:rhel8.6
+FROM ubi8/ubi:8.6
 
 RUN INSTALL_PKGS="git \
   unzip \
