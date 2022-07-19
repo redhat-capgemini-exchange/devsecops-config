@@ -18,7 +18,7 @@ See [operator/README.md](operators/README.md) for a step-by-step guid how to ins
 
 ## OpenShift GitOps
 
-A default instance is installed in the `openshift-operators` namespace. 
+A default instance is installed in the `openshift-gitops` namespace. 
 
 Verify that the default GitOps instance is up-and-running:
 
@@ -32,8 +32,8 @@ The instance has a default user `admin`. A password is created during the inital
 oc extract secret/openshift-gitops-cluster -n openshift-gitops --to=-
 ```
 
-**Note:** The default OpenShift GitOps (Argo CD) service, routes etc. are deployed in namespace `openshift-gitops`.
+Get the ArgoCD route:
 
 ```shell
-oc get routes -n openshift-gitops
+oc get route openshift-gitops-server -n openshift-gitops
 ```

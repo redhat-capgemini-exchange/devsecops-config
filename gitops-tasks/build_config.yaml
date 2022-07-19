@@ -1,0 +1,36 @@
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  name: gitops-cli
+  annotations:
+    description: base image for pipeline tasks
+spec:
+  source:
+    git:
+      ref: main
+      uri: "https://github.com/redhat-capgemini-exchange/devsecops-config"
+    contextDir: gitops-cli
+    type: Git
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: Dockerfile
+  output:
+    to:
+      kind: ImageStreamTag
+      name: gitops-cli:latest
+      namespace: openshift
+  triggers:
+    - type: ImageChange
+      imageChange: {}
+    - type: ConfigChange
+--- 
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  name: gitops-cli
+  annotations:
+    description: base image for pipeline tasks
+spec:
+  lookupPolicy:
+    local: false
