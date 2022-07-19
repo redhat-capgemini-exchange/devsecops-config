@@ -10,17 +10,11 @@ The following components are used:
 * Red Hat Quay Bridge Operator
 * Red Hat Quay Container Security Operator
 
-## Preparation
-
-### Install OpenShift Data Foundations
-
-Red Hat Quay uses some Red Hat Data Foundation APIs. To install the ODF operator, follow the instructions [here](https://access.redhat.com/documentation/en-us/red_hat_openshift_data_foundation/4.10).
-
-Also create a default `StorageSystem`.
 
 ## Install the operators
 
 See [operator/README.md](operators/README.md) for a step-by-step guid how to install and configure the operators.
+
 
 ## OpenShift GitOps
 
@@ -38,3 +32,8 @@ The instance has a default user `admin`. A password is created during the inital
 oc extract secret/openshift-gitops-cluster -n openshift-gitops --to=-
 ```
 
+**Note:** The default OpenShift GitOps (Argo CD) service, routes etc. are deployed in namespace `openshift-gitops`.
+
+```shell
+oc get routes -n openshift-gitops
+```

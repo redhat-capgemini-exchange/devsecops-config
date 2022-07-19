@@ -1,21 +1,12 @@
 # Install and config the operators
 
-## Preparation
-
-### Install OpenShift Data Foundations
-
-Red Hat Quay uses some Red Hat Data Foundation APIs. To install the ODF operator, follow the instructions [here](https://access.redhat.com/documentation/en-us/red_hat_openshift_data_foundation/4.10).
-
-Also create a default `StorageSystem`.
-
-## Install the operators
+## Install the GitOps operators
 
 Subscribe to the operators:
 
 ```shell
 oc apply -f operators/openshift-gitops-operator.yaml
 oc apply -f operators/openshift-pipeline-operator.yaml
-oc apply -f operators/openshift-quay-operator.yaml
 ```
 
 Verify that the default GitOps instance is up-and-running:
@@ -24,12 +15,26 @@ Verify that the default GitOps instance is up-and-running:
 oc get pods -n openshift-gitops
 ```
 
-### Configure Red Hat Quay
+## Configure Red Hat Quay
+
+### Install OpenShift Data Foundations
+
+Red Hat Quay uses some Red Hat Data Foundation APIs. To install the ODF operator, follow the instructions [here](https://access.redhat.com/documentation/en-us/red_hat_openshift_data_foundation/4.10).
+
+Also create a default `StorageSystem`.
+
+### Install the Quay operator
 
 Deploy the initial config params:
 
 ```shell
 oc create secret generic -n openshift-operators --from-file config.yaml=./quay/config.yaml quay-init-config-bundle
+```
+
+Subscribe to the Quay operator:
+
+```shell
+oc apply -f operators/openshift-quay-operator.yaml
 ```
 
 Deploy the Quay instance:
