@@ -29,10 +29,6 @@ spec:
     - name: KUSTOMIZATION_PATH
       type: string
       
-  #results:
-  #  - name: commit
-  #    description: The commit SHA
-
   stepTemplate:
     envFrom:
       - secretRef:
@@ -54,10 +50,10 @@ spec:
     - name: git-clone-manifest
       image: image-registry.openshift-image-registry.svc:5000/openshift/gitops-cli:1.0.0
       workingDir: $(workspaces.manifest.path)
-      
       script: |
+        set -x
+
         # setup gh cli
-        echo "-> setup gh"
         gh auth setup-git
 
         # extract the branch ref
@@ -79,8 +75,17 @@ spec:
         git config pull.rebase true
 
         if [ "$BRANCH" != main ]; then
-          # pull latest revision if not on main
-          git checkout $BRANCH
+          
+          REMOTE=`git branch -a | grep $BRANCH || true`
+          
+          if [ -z $REMOTE ]; then
+            git checkout -b $BRANCH
+
+            git push origin $BRANCH
+          else
+            git checkout $BRANCH
+          fi
+
         fi
 
         REVISION=$(params.GIT_REVISION)
@@ -92,25 +97,16 @@ spec:
         - mountPath: /gen-source
           name: gen-source
 
-    - name: patch-manifest
+    - name: create-patch
       image: image-registry.openshift-image-registry.svc:5000/openshift/gitops-cli:1.0.0
       workingDir: $(workspaces.manifest.path)
-      
       script: |
+        set -x
+
         cd manifest-workdir
 
-        # extract the branch ref
-        IFS="/" read -a branchref <<< "$(params.GIT_BRANCH_REF)"
-        
-        BRANCH="${branchref[-1]}"
-        REVISION=$(params.GIT_REVISION)
-        PR="pr-${REVISION:0:7}@$BRANCH"
+        echo "$(date +%s) $(params.GIT_REVISION) $(params.IMAGE_DIGEST)" > manifest.txt
 
-        # append to AUDIT.md
-        AUDIT_MSG="$(date +%s): $PR $(params.GIT_PUSHER_NAME)/$(params.GIT_PUSHER_EMAIL)   \n$REVISION   \n$(params.IMAGE_DIGEST)  \n'$(params.GIT_COMMIT_MESSAGE)'   \n\n"
-
-        echo "-> $AUDIT_MSG"
-        echo -e $AUDIT_MSG >> AUDIT.md
 
       volumeMounts:
         - mountPath: /gen-source
@@ -119,8 +115,9 @@ spec:
     - name: create-pull-request
       image: image-registry.openshift-image-registry.svc:5000/openshift/gitops-cli:1.0.0
       workingDir: $(workspaces.manifest.path)
-      
       script: |
+        set -x
+
         # extract the branch ref
         IFS="/" read -a branchref <<< "$(params.GIT_BRANCH_REF)"
         
@@ -145,7 +142,7 @@ spec:
         COMMIT_MSG="$PR"
         AUDIT_MSG="$(date +%s): $PR $(params.GIT_PUSHER_NAME)/$(params.GIT_PUSHER_EMAIL)  $REVISION   $(params.IMAGE_DIGEST)  $(params.GIT_COMMIT_MESSAGE)"
 
-        git status
+        git add manifest.txt
 
         git commit -am "$COMMIT_MSG"
         
