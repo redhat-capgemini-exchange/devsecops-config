@@ -11,3 +11,12 @@ RUN INSTALL_PKGS="git \
 # GitHub CLI
 RUN dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo && \
   dnf -y install gh
+
+# Kubectl
+#RUN yum install -y kubectl
+
+# kustomize
+# https://kubectl.docs.kubernetes.io/installation/kustomize/binaries/
+
+# tekton
+# https://tekton.dev/docs/cli/
