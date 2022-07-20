@@ -39,6 +39,8 @@ spec:
       image: image-registry.openshift-image-registry.svc:5000/openshift/gitops-cli:1.0.0
       workingDir: $(workspaces.manifest.path)
       script: |
+        #!/usr/bin/env bash
+
         echo "-> Validating authentication against github.com"
 
         gh auth status
@@ -51,6 +53,8 @@ spec:
       image: image-registry.openshift-image-registry.svc:5000/openshift/gitops-cli:1.0.0
       workingDir: $(workspaces.manifest.path)
       script: |
+        #!/usr/bin/env bash
+        
         set -x
 
         # setup gh cli
@@ -101,6 +105,8 @@ spec:
       image: image-registry.openshift-image-registry.svc:5000/openshift/gitops-cli:1.0.0
       workingDir: $(workspaces.manifest.path)
       script: |
+        #!/usr/bin/env bash
+
         set -x
 
         cd manifest-workdir
@@ -116,6 +122,8 @@ spec:
       image: image-registry.openshift-image-registry.svc:5000/openshift/gitops-cli:1.0.0
       workingDir: $(workspaces.manifest.path)
       script: |
+        #!/usr/bin/env bash
+        
         set -x
 
         # extract the branch ref
