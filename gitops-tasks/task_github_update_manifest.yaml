@@ -1,0 +1,169 @@
+apiVersion: tekton.dev/v1beta1
+kind: ClusterTask
+metadata:
+  annotations:
+    tekton.dev/displayName: github update manifest
+    tekton.dev/pipelines.minVersion: '0.19'
+    tekton.dev/tags: 'git, pull-request'
+  name: github-update-manifest
+  labels:
+    operator.tekton.dev/provider-type: community
+spec:
+  description: This task patches the gitops manifest
+  params:
+    - name: MANIFESTS_GIT
+      type: string
+    - name: GIT_REVISION
+      type: string
+    - name: GIT_BRANCH_REF
+      type: string
+    - name: GIT_PUSHER_NAME
+      type: string
+    - name: GIT_PUSHER_EMAIL
+      type: string
+    - name: GIT_COMMIT_MESSAGE
+      type: string
+    - name: IMAGE_DIGEST
+      type: string
+    # remove?
+    - name: KUSTOMIZATION_PATH
+      type: string
+      
+  #results:
+  #  - name: commit
+  #    description: The commit SHA
+
+  stepTemplate:
+    envFrom:
+      - secretRef:
+          name: github-secrets
+
+  steps:
+    - name: validate-github
+      image: image-registry.openshift-image-registry.svc:5000/nodejs-gitops-pipeline/gitops-cli:latest
+      workingDir: $(workspaces.manifest.path)
+      script: |
+        echo "-> Validating authentication against github.com"
+
+        gh auth status
+      
+      volumeMounts:
+        - mountPath: /gen-source
+          name: gen-source
+
+    - name: git-clone-manifest
+      image: image-registry.openshift-image-registry.svc:5000/nodejs-gitops-pipeline/gitops-cli:latest
+      workingDir: $(workspaces.manifest.path)
+      
+      script: |
+        # setup gh cli
+        echo "-> setup gh"
+        gh auth setup-git
+
+        # extract the branch ref
+        IFS="/" read -a branchref <<< "$(params.GIT_BRANCH_REF)"
+        BRANCH="${branchref[-1]}"
+
+        # clone the repo
+        echo "-> cloning $(params.MANIFESTS_GIT)"
+
+        rm -rf manifest-workdir
+
+        git clone $(params.MANIFESTS_GIT) manifest-workdir
+
+        cd manifest-workdir
+
+        # setup git
+        git config --global user.email "$(params.GIT_PUSHER_EMAIL)"
+        git config --global user.name "$(params.GIT_PUSHER_NAME)"
+        git config pull.rebase true
+
+        if [ "$BRANCH" != main ]; then
+          # pull latest revision if not on main
+          git checkout -b $BRANCH
+          git pull origin $BRANCH
+        fi
+
+        REVISION=$(params.GIT_REVISION)
+        PR="pr-${REVISION:0:7}@$BRANCH"
+
+        git checkout -b $PR
+
+      volumeMounts:
+        - mountPath: /gen-source
+          name: gen-source
+
+    - name: patch-manifest
+      image: image-registry.openshift-image-registry.svc:5000/nodejs-gitops-pipeline/gitops-cli:latest
+      workingDir: $(workspaces.manifest.path)
+      
+      script: |
+        cd manifest-workdir
+
+        # extract the branch ref
+        IFS="/" read -a branchref <<< "$(params.GIT_BRANCH_REF)"
+        
+        BRANCH="${branchref[-1]}"
+        REVISION=$(params.GIT_REVISION)
+        PR="pr-${REVISION:0:7}@$BRANCH"
+
+        # append to AUDIT.md
+        AUDIT_MSG="$(date +%s): $PR $(params.GIT_PUSHER_NAME)/$(params.GIT_PUSHER_EMAIL)   \n$REVISION   \n$(params.IMAGE_DIGEST)  \n'$(params.GIT_COMMIT_MESSAGE)'   \n\n"
+
+        echo "-> $AUDIT_MSG"
+        echo -e $AUDIT_MSG >> AUDIT.md
+
+      volumeMounts:
+        - mountPath: /gen-source
+          name: gen-source
+
+    - name: create-pull-request
+      image: image-registry.openshift-image-registry.svc:5000/nodejs-gitops-pipeline/gitops-cli:latest
+      workingDir: $(workspaces.manifest.path)
+      
+      script: |
+        # extract the branch ref
+        IFS="/" read -a branchref <<< "$(params.GIT_BRANCH_REF)"
+        
+        BRANCH="${branchref[-1]}"
+        REVISION=$(params.GIT_REVISION)
+        PR="pr-${REVISION:0:7}@$BRANCH"
+
+        # setup git
+        cd manifest-workdir
+
+        # setup gh CLI
+        gh auth setup-git
+
+        # setup git
+        git config --global user.email "$(params.GIT_PUSHER_EMAIL)"
+        git config --global user.name "$(params.GIT_PUSHER_NAME)"
+        git config pull.rebase true
+
+        # commit and push to branch
+        echo "-> pushing to branch $PR"
+
+        COMMIT_MSG="$PR"
+        AUDIT_MSG="$(date +%s): $PR $(params.GIT_PUSHER_NAME)/$(params.GIT_PUSHER_EMAIL)  $REVISION   $(params.IMAGE_DIGEST)  $(params.GIT_COMMIT_MESSAGE)"
+
+        git status
+
+        git commit -am "$COMMIT_MSG"
+        
+        git push origin $PR
+
+        # create a PR
+        gh pr create --base $BRANCH --head $PR --title "$COMMIT_MSG" --body "$AUDIT_MSG"
+
+      volumeMounts:
+        - mountPath: /gen-source
+          name: gen-source
+
+  workspaces:
+    - mountPath: /workspace/manifest
+      name: manifest
+  volumes:
+    - emptyDir: {}
+      name: gen-source
+  
+    
