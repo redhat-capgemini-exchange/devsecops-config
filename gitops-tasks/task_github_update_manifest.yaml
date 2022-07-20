@@ -80,8 +80,7 @@ spec:
 
         if [ "$BRANCH" != main ]; then
           # pull latest revision if not on main
-          git checkout -b $BRANCH
-          git pull origin $BRANCH
+          git checkout $BRANCH
         fi
 
         REVISION=$(params.GIT_REVISION)
