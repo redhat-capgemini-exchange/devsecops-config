@@ -19,7 +19,7 @@ spec:
   output:
     to:
       kind: ImageStreamTag
-      name: gitops-cli:latest
+      name: gitops-cli:1.0.0
       namespace: openshift
   triggers:
     - type: ImageChange

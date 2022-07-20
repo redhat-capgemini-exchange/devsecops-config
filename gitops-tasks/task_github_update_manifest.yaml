@@ -40,7 +40,7 @@ spec:
 
   steps:
     - name: validate-github
-      image: image-registry.openshift-image-registry.svc:5000/nodejs-gitops-pipeline/gitops-cli:latest
+      image: gitops-cli:1.0.0
       workingDir: $(workspaces.manifest.path)
       script: |
         echo "-> Validating authentication against github.com"
@@ -52,7 +52,7 @@ spec:
           name: gen-source
 
     - name: git-clone-manifest
-      image: image-registry.openshift-image-registry.svc:5000/nodejs-gitops-pipeline/gitops-cli:latest
+      image: gitops-cli:1.0.0
       workingDir: $(workspaces.manifest.path)
       
       script: |
@@ -94,7 +94,7 @@ spec:
           name: gen-source
 
     - name: patch-manifest
-      image: image-registry.openshift-image-registry.svc:5000/nodejs-gitops-pipeline/gitops-cli:latest
+      image: gitops-cli:1.0.0
       workingDir: $(workspaces.manifest.path)
       
       script: |
@@ -118,7 +118,7 @@ spec:
           name: gen-source
 
     - name: create-pull-request
-      image: image-registry.openshift-image-registry.svc:5000/nodejs-gitops-pipeline/gitops-cli:latest
+      image: gitops-cli:1.0.0
       workingDir: $(workspaces.manifest.path)
       
       script: |
