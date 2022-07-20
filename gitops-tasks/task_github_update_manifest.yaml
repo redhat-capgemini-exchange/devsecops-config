@@ -89,7 +89,7 @@ spec:
         fi
 
         REVISION=$(params.GIT_REVISION)
-        PR="pr-${REVISION:0:7}@$BRANCH"
+        PR="pr-${REVISION:0:7}-$BRANCH"
 
         git checkout -b $PR
 
@@ -123,7 +123,7 @@ spec:
         
         BRANCH="${branchref[-1]}"
         REVISION=$(params.GIT_REVISION)
-        PR="pr-${REVISION:0:7}@$BRANCH"
+        PR="pr-${REVISION:0:7}-$BRANCH"
 
         # setup git
         cd manifest-workdir
