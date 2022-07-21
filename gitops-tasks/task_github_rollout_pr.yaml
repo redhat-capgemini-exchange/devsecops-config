@@ -48,7 +48,7 @@ spec:
         BRANCH="${branchref[-1]}"
 
         # clone the repo
-        echo "-> cloning $(params.MANIFESTS_GIT)"
+        echo "-> cloning $(params.CONFIG_GIT_REPO)"
 
         rm -rf manifest-workdir
 
