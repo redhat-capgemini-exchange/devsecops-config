@@ -61,6 +61,22 @@ spec:
         git config --global user.name "$(params.GIT_PUSHER_NAME)"
         git config pull.rebase true
 
+        # checkout or create the correct baseline
+        
+        if [ "$BRANCH" != main ]; then
+          
+          REMOTE=`git branch -a | grep $BRANCH || true`
+          
+          if [ -z $REMOTE ]; then
+            git checkout -b $BRANCH
+
+            git push origin $BRANCH
+          else
+            git checkout $BRANCH
+          fi
+
+        fi
+
         # create a new branch for the PR
 
         REVISION=$(params.GIT_REVISION)
@@ -135,7 +151,7 @@ spec:
         git push origin $PR
 
         # create a PR
-        gh pr create --base main --head $PR --title "$COMMIT_MSG" --body "$AUDIT_MSG"
+        gh pr create --base $BRANCH --head $PR --title "$COMMIT_MSG" --body "$AUDIT_MSG"
 
       volumeMounts:
         - mountPath: /gen-source
