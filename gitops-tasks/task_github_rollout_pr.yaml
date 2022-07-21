@@ -1,22 +1,23 @@
 apiVersion: tekton.dev/v1beta1
 kind: ClusterTask
 metadata:
-  annotations:
-    tekton.dev/displayName: github update manifest
-    tekton.dev/pipelines.minVersion: '0.19'
-    tekton.dev/tags: 'git, pull-request'
-  name: github-update-manifest
-  labels:
-    operator.tekton.dev/provider-type: community
+  name: github-rollout-pr
 spec:
-  description: This task patches the gitops manifest
+  description: >-
+    This task creates a pull request in an applications config repository in order to trigger a rollout.
   params:
-    - name: MANIFESTS_GIT
+    - name: CONFIG_GIT_REPO
       type: string
+      description: The config repository url
+    - name: PATH_CONTEXT
+      type: string
+      description: The relative path in MANIFEST_GIT
     - name: GIT_REVISION
       type: string
+      description: The git revision of the source repo to deploy
     - name: GIT_BRANCH_REF
       type: string
+      description: The source repos branch name
     - name: GIT_PUSHER_NAME
       type: string
     - name: GIT_PUSHER_EMAIL
@@ -25,36 +26,18 @@ spec:
       type: string
     - name: IMAGE_DIGEST
       type: string
-    # remove?
-    - name: KUSTOMIZATION_PATH
-      type: string
-      
+      description: The digest of the image stream that matches the GIT_REVISION
   stepTemplate:
     envFrom:
       - secretRef:
           name: github-secrets
-
   steps:
-    - name: validate-github
+    - name: git-checkout-repo
       image: image-registry.openshift-image-registry.svc:5000/openshift/gitops-cli:1.0.0
       workingDir: $(workspaces.manifest.path)
       script: |
         #!/usr/bin/env bash
 
-        echo "-> Validating authentication against github.com"
-
-        gh auth status
-      
-      volumeMounts:
-        - mountPath: /gen-source
-          name: gen-source
-
-    - name: git-clone-manifest
-      image: image-registry.openshift-image-registry.svc:5000/openshift/gitops-cli:1.0.0
-      workingDir: $(workspaces.manifest.path)
-      script: |
-        #!/usr/bin/env bash
-        
         set -x
 
         # setup gh cli
@@ -69,7 +52,7 @@ spec:
 
         rm -rf manifest-workdir
 
-        git clone $(params.MANIFESTS_GIT) manifest-workdir
+        git clone $(params.CONFIG_GIT_REPO) manifest-workdir
 
         cd manifest-workdir
 
@@ -109,10 +92,13 @@ spec:
 
         set -x
 
+        # extract the branch ref
+        IFS="/" read -a branchref <<< "$(params.GIT_BRANCH_REF)"
+        BRANCH="${branchref[-1]}"
+
         cd manifest-workdir
 
-        echo "$(date +%s) $(params.GIT_REVISION) $(params.IMAGE_DIGEST)" > manifest.txt
-
+        echo "$BRANCH $(params.GIT_REVISION) $(params.IMAGE_DIGEST)" > manifest.txt
 
       volumeMounts:
         - mountPath: /gen-source
@@ -123,12 +109,12 @@ spec:
       workingDir: $(workspaces.manifest.path)
       script: |
         #!/usr/bin/env bash
-        
+
         set -x
 
         # extract the branch ref
         IFS="/" read -a branchref <<< "$(params.GIT_BRANCH_REF)"
-        
+
         BRANCH="${branchref[-1]}"
         REVISION=$(params.GIT_REVISION)
         PR="pr-${REVISION:0:7}-$BRANCH"
@@ -153,7 +139,7 @@ spec:
         git add manifest.txt
 
         git commit -am "$COMMIT_MSG"
-        
+
         git push origin $PR
 
         # create a PR
@@ -169,5 +155,3 @@ spec:
   volumes:
     - emptyDir: {}
       name: gen-source
-  
-    

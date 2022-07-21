@@ -14,7 +14,6 @@ spec:
       type: string
     - name: NAMESPACE
       type: string
-
   steps:
     - name: tag-image
       image: quay.io/openshift/origin-cli:latest
