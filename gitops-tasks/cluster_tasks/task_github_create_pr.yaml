@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: ClusterTask
 metadata:
-  name: github-rollout-pr
+  name: github-create-pr
 spec:
   description: >-
     This task creates a pull request in an applications config repository in order to trigger a rollout.
@@ -61,19 +61,7 @@ spec:
         git config --global user.name "$(params.GIT_PUSHER_NAME)"
         git config pull.rebase true
 
-        if [ "$BRANCH" != main ]; then
-          
-          REMOTE=`git branch -a | grep $BRANCH || true`
-          
-          if [ -z $REMOTE ]; then
-            git checkout -b $BRANCH
-
-            git push origin $BRANCH
-          else
-            git checkout $BRANCH
-          fi
-
-        fi
+        # create a new branch for the PR
 
         REVISION=$(params.GIT_REVISION)
         PR="pr-${REVISION:0:7}-$BRANCH"
@@ -98,7 +86,7 @@ spec:
 
         cd manifest-workdir
 
-        echo "$BRANCH $(params.GIT_REVISION) $(params.IMAGE_DIGEST)" > manifest.txt
+        echo "$BRANCH $(params.GIT_REVISION) $(params.IMAGE_DIGEST)" > ./$(params.PATH_CONTEXT)/$BRANCH/manifest.txt
 
       volumeMounts:
         - mountPath: /gen-source
@@ -136,14 +124,14 @@ spec:
         COMMIT_MSG="$PR"
         AUDIT_MSG="$(date +%s): $PR $(params.GIT_PUSHER_NAME)/$(params.GIT_PUSHER_EMAIL)  $REVISION   $(params.IMAGE_DIGEST)  $(params.GIT_COMMIT_MESSAGE)"
 
-        git add manifest.txt
+        git add ./$(params.PATH_CONTEXT)/$BRANCH/manifest.txt
 
         git commit -am "$COMMIT_MSG"
 
         git push origin $PR
 
         # create a PR
-        gh pr create --base $BRANCH --head $PR --title "$COMMIT_MSG" --body "$AUDIT_MSG"
+        gh pr create --base main --head $PR --title "$COMMIT_MSG" --body "$AUDIT_MSG"
 
       volumeMounts:
         - mountPath: /gen-source
