@@ -86,7 +86,11 @@ spec:
 
         cd manifest-workdir
 
+        # write a manifest file
         echo "$BRANCH $(params.GIT_REVISION) $(params.IMAGE_DIGEST)" > ./$(params.PATH_CONTEXT)/$BRANCH/manifest.txt
+
+        # patch the deployment descriptor
+        sed 's/nodejs-gitops:main/nodejs-gitops:$(params.GIT_REVISION)/g' ./$(params.PATH_CONTEXT)/$BRANCH/app.tmpl > ./$(params.PATH_CONTEXT)/$BRANCH/app.yaml
 
       volumeMounts:
         - mountPath: /gen-source
