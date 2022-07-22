@@ -1,4 +1,4 @@
-# Install and config the operators
+# Installation
 
 ## Install the GitOps operators
 
@@ -15,50 +15,56 @@ Verify that the default GitOps instance is up-and-running:
 oc get pods -n openshift-gitops
 ```
 
+That's all ...
+
 ## Configure Red Hat Quay
 
 ### Install OpenShift Data Foundations
 
+Before you begin:
+
 Red Hat Quay uses some Red Hat Data Foundation APIs. To install the ODF operator, follow the instructions [here](https://access.redhat.com/documentation/en-us/red_hat_openshift_data_foundation/4.10).
 
-Also create a default `StorageSystem`.
+**Important:** Create a default `StorageSystem` and wait until it is operational !
 
 ### Install the Quay operator
 
-Deploy the initial config params:
+Deploy the initial config params for the Quay operator installation:
 
 ```shell
-oc create secret generic -n openshift-operators --from-file config.yaml=./quay/config.yaml quay-init-config-bundle
+oc create secret generic -n openshift-operators --from-file config.yaml=./operators/quay/config.yaml quay-init-config-bundle
 ```
 
-Subscribe to the Quay operator:
+Subscribe to the Quay and Quay Bridge operators:
 
 ```shell
 oc apply -f operators/openshift-quay-operator.yaml
 ```
 
-Deploy the Quay instance:
+Deploy the default Quay instance:
 
 ```shell
-oc create -n openshift-operators -f quay/quay-registry.yaml
+oc create -n openshift-operators -f operators/quay/quay-registry.yaml
 ```
 
 #### Create the admin user
 
-Get the Quay API endpoint:
+To create a default `quayadmin` user, make a call to Quay's management API:
 
 ```shell
-oc get quayregistry -n openshift-operators quay-registry -o jsonpath="{.status.registryEndpoint}" -w
-```
+# get the quay api endpoint
+oc get quayregistry -n openshift-operators quay-registry -o jsonpath="{.status.registryEndpoint}"
 
-```shell
-export QUAY_ENDPOINT=https://quay-registry-.... 
+export QUAY=https://quay-registry-.... 
 
-curl -X POST -k  "$QUAY_ENDPOINT/api/v1/user/initialize" \
+curl -X POST -k  "$QUAY/api/v1/user/initialize" \
     --header 'Content-Type: application/json' \
     --data '{ "username": "quayadmin", "password":"quaypass123", "email": "quayadmin@example.com", "access_token": true}'
 
 ```
+
+**Important:** save the access token somewhere, it is never shown again !
+
 
 #### Configure the Quay Bridge
 

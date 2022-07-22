@@ -1,17 +1,20 @@
 # devsecops-config
 
-This repo contains a collection of deployment configs and instructions on how to setup the basic OpenShift components needed for `GitOps` and `DevSecOps`.
+The `devsecops-config` repo provides a collection of instructions, deployment configurations, sample files etc. to create a DevSecOps CICD setup on red Hat OpenShift.
 
-The following components are used:
+It uses several technologies such as:
 
-* Red Hat OpenShift GitOps
-* Red Hat OpenShift Pipelines
-* Red Hat Quay
-* Red Hat Quay Bridge Operator
+* Red Hat OpenShift GitOps (a.k.a ArgoCD)
+* Red Hat OpenShift Pipelines (a.k.a. Tekton)
+* Red Hat Quay (and Quay Bridge Operator)
 * Red Hat Quay Container Security Operator
 
+Additionally multi-cluster management tools can be added:
 
-## Install the operators
+* Red Hat OpenShift Advanced Cluster Manager for Kubernetes
+* Red Hat OpenShift Advanced Cluster Security for Kubernetes
+
+## Installation
 
 See [operator/README.md](operators/README.md) for a step-by-step guid how to install and configure the operators.
 
