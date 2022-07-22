@@ -40,3 +40,6 @@ Get the ArgoCD route:
 ```shell
 oc get route openshift-gitops-server -n openshift-gitops
 ```
+
+
+

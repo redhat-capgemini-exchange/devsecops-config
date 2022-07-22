@@ -56,7 +56,9 @@ To create a default `quayadmin` user, make a call to Quay's management API:
 oc get quayregistry -n openshift-operators quay-registry -o jsonpath="{.status.registryEndpoint}"
 
 export QUAY=https://quay-registry-.... 
+```
 
+```shell
 curl -X POST -k  "$QUAY/api/v1/user/initialize" \
     --header 'Content-Type: application/json' \
     --data '{ "username": "quayadmin", "password":"quaypass123", "email": "quayadmin@example.com", "access_token": true}'
@@ -66,13 +68,13 @@ curl -X POST -k  "$QUAY/api/v1/user/initialize" \
 **Important:** save the access token somewhere, it is never shown again !
 
 
-#### Configure the Quay Bridge
+### Configure the Quay Bridge
 
 Log into Quay as the admin user (quayadmin@quaypass123).
 
 Create a `new organization` (gitopshq).
 
-Create a new `application` within the organization (quay-bridge). 
+Create a new `application` within the organization (gitopshq-bridge). 
 
 Create an `Access Token` for the application. Give it full rights to the organization.
 
@@ -83,12 +85,12 @@ oc create secret -n openshift-operators generic quay-integration \
     --from-literal=token=<access_token>
 ```
 
-Update `quay/quay-integration.yaml` with the actual Quay instance endpoint.
+Update `operators/quay/quay-integration.yaml` with the actual Quay instance endpoint.
 
 Deploy the Quay Bridge instance:
 
 ```shell
-oc apply -n openshift-operators -f quay/quay-integration.yaml
+oc apply -n openshift-operators -f operators/quay/quay-integration.yaml
 ```
 
 See [https://github.com/quay/quay-bridge-operator](https://github.com/quay/quay-bridge-operator) for more details on the operator.
@@ -99,6 +101,8 @@ See [https://github.com/quay/quay-bridge-operator](https://github.com/quay/quay-
 ```shell
 oc apply -f operators/openshift-quay-security-operator.yaml
 ```
+
+That's all ...
 
 See [https://github.com/quay/container-security-operator](https://github.com/quay/container-security-operator) for more details on the operator.
 
