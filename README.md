@@ -40,3 +40,17 @@ Get the ArgoCD route:
 ```shell
 oc get route openshift-gitops-server -n openshift-gitops
 ```
+
+### Configuration and secrets
+
+Make a copy of the `secrets/*.example.yaml` files and edit their contents to match your environment.
+
+Deploy the pipeline configs and secrets:
+
+```shell
+
+oc apply -f secrets/github_secrets.yaml -n devsecops-config
+oc apply -f secrets/argocd_secrets.yaml -n devsecops-config
+oc apply -f secrets/argocd_configmap.yaml -n devsecops-config
+
+```

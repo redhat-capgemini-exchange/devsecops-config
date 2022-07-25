@@ -21,8 +21,8 @@ spec:
         params:
           - name: APP_NAME
             value: $(tt.params.git-repo-name)
-          - name: NAMESPACE
-            value: "nodejs-gitops-pipeline"
+          #- name: NAMESPACE
+          #  value: "nodejs-gitops-pipeline"
           #- name: CONFIG_GIT_REPO
           #  value: "https://github.com/redhat-capgemini-exchange/nodejs-gitops"
           - name: GIT_REPO
@@ -42,8 +42,7 @@ spec:
           - name: PATH_CONTEXT
             value: "."
           - name: IMAGE_STREAM
-            value: >-
-              image-registry.openshift-image-registry.svc:5000/nodejs-gitops-pipeline/nodejs-gitops
+            value: "image-registry.openshift-image-registry.svc:5000/$(tt.params.git-repo-name)-develop/$(tt.params.git-repo-name)"
           - name: IMAGE_TAG
             value: latest
         pipelineRef:

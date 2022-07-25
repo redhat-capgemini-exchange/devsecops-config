@@ -6,7 +6,13 @@ spec:
   params:
     - name: APP_NAME
       type: string
-      description: name of the application to sync    
+      description: name of the application to sync
+    - name: CONFIG_GIT_REPO
+      type: string
+      description: The config repository url
+    - name: PATH_CONTEXT
+      type: string
+      description: The relative path in CONFIG_GIT_REPO
     - name: GIT_REVISION
       type: string
       default: HEAD
@@ -14,28 +20,74 @@ spec:
     - name: argocd-version
       type: string
       default: v2.2.2
-      
   stepTemplate:
     envFrom:
       - configMapRef:
           name: argocd-env-configmap
       - secretRef:
           name: argocd-env-secret
-    name: ""
     resources: {}
+  results:
+    - description: Name of the source repo
+      name: BASE_NAME
   steps:
-    - image: "quay.io/argoproj/argocd:$(params.argocd-version)"
-      name: login
+    - name: git-checkout-repo
+      image: image-registry.openshift-image-registry.svc:5000/openshift/gitops-cli:1.0.0
+      workingDir: $(workspaces.manifest.path)
+      script: |
+        #!/usr/bin/env bash
+
+        set -x
+
+        # setup gh cli
+        gh auth setup-git
+
+        # clone the repo
+        echo "-> cloning $(params.CONFIG_GIT_REPO)"
+
+        rm -rf manifest-workdir
+
+        git clone $(params.CONFIG_GIT_REPO) manifest-workdir
+
+        cd manifest-workdir
+
+        # read the app config
+        source ./$(params.PATH_CONTEXT)/config/app.config
+
+        # return the REPO_NAME
+        printf "%s" "${REPO_NAME}" > "$(results.BASE_NAME.path)"
+
+      volumeMounts:
+        - mountPath: /gen-source
+          name: gen-source
+
+    - name: sync-apps
+      image: "quay.io/argoproj/argocd:$(params.argocd-version)"
+      workingDir: $(workspaces.manifest.path)
       resources: {}
       script: |
         #!/usr/bin/env bash
 
         set -x
 
+        cd manifest-workdir
+
+        # read the app config
+        source ./$(params.PATH_CONTEXT)/config/app.config
+
         argocd login "$ARGOCD_SERVER" --username="$ARGOCD_USERNAME" --password="$ARGOCD_PASSWORD" --insecure
 
-        argocd app sync "$(params.APP_NAME)-main" --revision "$(params.GIT_REVISION)"
+        argocd app sync "$REPO_NAME-main" --revision "$(params.GIT_REVISION)"
+        
+        argocd app sync "$REPO_NAME-release" --revision "$(params.GIT_REVISION)"
 
-        argocd app sync "$(params.APP_NAME)-release" --revision "$(params.GIT_REVISION)"
+      volumeMounts:
+        - mountPath: /gen-source
+          name: gen-source
 
-        #argocd app wait "$APP" --health
+  workspaces:
+    - mountPath: /workspace/manifest
+      name: manifest
+  volumes:
+    - emptyDir: {}
+      name: gen-source

@@ -1,17 +1,33 @@
+kind: AppProject
+apiVersion: argoproj.io/v1alpha1
+metadata:
+  name: default-devsecops-project
+  namespace: openshift-gitops
+spec:
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  destinations:
+    - namespace: "devsecops-config"
+      server: "*"
+  sourceRepos:
+    - "*"
+status: {}
+---
 kind: Application
 apiVersion: argoproj.io/v1alpha1
 metadata:
   name: build-pipeline
   namespace: openshift-gitops
 spec:
-  project: default-app-project
+  project: default-devsecops-project
   revisionHistoryLimit: 3
   #syncPolicy:
   #  automated:
   #    prune: true
   #    selfHeal: true
   destination:
-    namespace: nodejs-gitops-pipeline
+    namespace: devsecops-config
     server: https://kubernetes.default.svc
   source:
     directory:
@@ -26,14 +42,14 @@ metadata:
   name: rollout-pipeline
   namespace: openshift-gitops
 spec:
-  project: default-app-project
+  project: default-devsecops-project
   revisionHistoryLimit: 3
   #syncPolicy:
   #  automated:
   #    prune: true
   #    selfHeal: true
   destination:
-    namespace: nodejs-gitops-pipeline
+    namespace: devsecops-config
     server: https://kubernetes.default.svc
   source:
     directory:

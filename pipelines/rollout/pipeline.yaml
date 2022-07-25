@@ -6,15 +6,19 @@ spec:
   params:
     - name: APP_NAME
       type: string
-      default: "nodejs-gitops"
+    - name: GIT_REPO
+      type: string
+    - name: PATH_CONTEXT
+      type: string
+      default: app
     - name: GIT_REVISION
       type: string
       default: develop
     - name: GIT_BRANCH_REF
       type: string
       default: "foo/bar/develop"
-  #workspaces:
-  #  - name: rollout
+  workspaces:
+    - name: audit
   tasks:
     - name: sync-apps
       taskRef:
@@ -23,22 +27,47 @@ spec:
       params:
         - name: APP_NAME
           value: $(params.APP_NAME)
+        - name: CONFIG_GIT_REPO
+          value: $(params.GIT_REPO)
+        - name: PATH_CONTEXT
+          value: $(params.PATH_CONTEXT)
         - name: GIT_REVISION
           value: $(params.GIT_REVISION)
       when:
         - input: $(params.GIT_BRANCH_REF)
           operator: in
           values: ["refs/heads/main"]
+      workspaces:
+        - name: manifest
+          workspace: audit
 
-    - name: label-dc
+    - name: label-dc-main
       taskRef:
         kind: ClusterTask
         name: add-revision-label
       params:
         - name: APP_NAME
-          value: $(params.APP_NAME)
+          value: $(tasks.sync-app.results.BASE_NAME)
         - name: GIT_REVISION
           value: $(params.GIT_REVISION)
+        - name: NAMESPACE
+          value: "$(tasks.sync-app.results.BASE_NAME)-main"
+        - name: RESOURCE
+          value: dc
+      runAfter:
+        - sync-apps
+
+    - name: label-dc-release
+      taskRef:
+        kind: ClusterTask
+        name: add-revision-label
+      params:
+        - name: APP_NAME
+          value: $(tasks.sync-app.results.BASE_NAME)
+        - name: GIT_REVISION
+          value: $(params.GIT_REVISION)
+        - name: NAMESPACE
+          value: "$(tasks.sync-app.results.BASE_NAME)-release"
         - name: RESOURCE
           value: dc
       runAfter:

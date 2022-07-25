@@ -16,7 +16,7 @@ install: install_tasks install_pipelines
 
 .PHONY: install_pipelines
 install_pipelines:
-	oc apply -n ${BUILD_NAMESPACE} -f pipelines/pipelines/
+	oc apply -n ${BUILD_NAMESPACE} -f pipelines/build/
 	oc apply -n ${BUILD_NAMESPACE} -f pipelines/rollout/
 
 .PHONY: install_tasks

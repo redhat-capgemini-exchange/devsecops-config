@@ -7,9 +7,9 @@ spec:
     - name: APP_NAME
       type: string
     #  default: "nodejs-gitops"
-    - name: NAMESPACE
-      type: string
-      default: "nodejs-gitops-pipeline"
+    #- name: NAMESPACE
+    #  type: string
+    #  default: "nodejs-gitops-pipeline"
     #- name: CONFIG_GIT_REPO
     #  type: string
     #  default: "https://github.com/redhat-capgemini-exchange/nodejs-gitops"
@@ -39,8 +39,8 @@ spec:
       default: "."  
     - name: IMAGE_STREAM
       type: string
-      default: >-
-        image-registry.openshift-image-registry.svc:5000/nodejs-gitops-pipeline/nodejs-gitops
+    #  default: >-
+    #    image-registry.openshift-image-registry.svc:5000/nodejs-gitops-pipeline/nodejs-gitops
   workspaces:
     - name: workspace
     - name: audit
@@ -101,7 +101,7 @@ spec:
         - name: IMAGE_NAME
           value: $(params.APP_NAME)
         - name: NAMESPACE
-          value: $(params.NAMESPACE)
+          value: "$(params.APP_NAME)-develop"
 
     - name: rollout
       taskRef:
@@ -126,8 +126,8 @@ spec:
           value: $(params.APP_NAME)
         - name: GIT_REVISION
           value: $(params.GIT_REVISION)
-        #- name: GIT_BRANCH_REF
-        #  value: $(params.GIT_BRANCH_REF)
+        - name: NAMESPACE
+          value: "$(params.APP_NAME)-develop"
         - name: RESOURCE
           value: dc
       runAfter:

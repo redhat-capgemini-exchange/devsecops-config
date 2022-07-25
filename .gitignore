@@ -1,4 +1,6 @@
 hack/**
 secrets.yaml
+*_secrets.yaml
 *_secret.yaml
+*_configmap.yaml
 stuff.md

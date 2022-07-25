@@ -8,6 +8,8 @@ spec:
       type: string
     - name: GIT_REVISION
       type: string
+    - name: NAMESPACE
+      type: string
     - name: RESOURCE
       type: string
   steps:
@@ -20,6 +22,4 @@ spec:
 
         echo "adding label to deployment config $(params.APP_NAME)"
 
-        oc label $(params.RESOURCE) $(params.APP_NAME) rev=$(params.GIT_REVISION) --overwrite -n "$(params.APP_NAME)-main"
-
-        oc label $(params.RESOURCE) $(params.APP_NAME) rev=$(params.GIT_REVISION) --overwrite -n "$(params.APP_NAME)-release"
+        oc label $(params.RESOURCE) $(params.APP_NAME) rev=$(params.GIT_REVISION) --overwrite -n "$(params.NAMESPACE)"

@@ -24,15 +24,14 @@ spec:
             value: $(tt.params.git-repo-name)
           - name: GIT_REVISION
             value: $(tt.params.git-revision)
-          #- name: GIT_BRANCH_REF
-          #  value: $(tt.params.git-branch-ref)
+          - name: GIT_BRANCH_REF
+            value: $(tt.params.git-branch-ref)
 
         pipelineRef:
           name: rollout-pipeline
 
         resources: []
-        #workspaces:
-        #  - name: rollout
-        #    persistentVolumeClaim:
-        #      claimName: rollout-workspace
-          
+        workspaces:
+          - name: audit
+            persistentVolumeClaim:
+              claimName: audit-workspace
