@@ -1,0 +1,58 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: trigger-template-build-pipeline
+spec:
+  params:
+    - name: git-revision
+    - name: git-commit-message
+    - name: git-repo-url
+    - name: git-repo-name
+    - name: git-branch-ref
+    - name: content-type
+    - name: pusher-name
+    - name: pusher-email
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        generateName: build-pipeline-
+      spec:
+        params:
+          - name: APP_NAME
+            value: $(tt.params.git-repo-name)
+          - name: NAMESPACE
+            value: "nodejs-gitops-pipeline"
+          #- name: CONFIG_GIT_REPO
+          #  value: "https://github.com/redhat-capgemini-exchange/nodejs-gitops"
+          - name: GIT_REPO
+            value: "$(tt.params.git-repo-url)"
+          - name: GIT_REVISION
+            value: $(tt.params.git-revision)
+          - name: GIT_BRANCH_REF
+            value: $(tt.params.git-branch-ref)
+          - name: GIT_PUSHER_NAME
+            value: $(tt.params.pusher-name)
+          - name: GIT_PUSHER_EMAIL
+            value: $(tt.params.pusher-email)
+          - name: GIT_COMMIT_MESSAGE
+            value: $(tt.params.git-commit-message)
+          - name: BUILDER_VERSION
+            value: "14-ubi8"
+          - name: PATH_CONTEXT
+            value: "."
+          - name: IMAGE_STREAM
+            value: >-
+              image-registry.openshift-image-registry.svc:5000/nodejs-gitops-pipeline/nodejs-gitops
+          - name: IMAGE_TAG
+            value: latest
+        pipelineRef:
+          name: build-pipeline
+        resources: []
+        workspaces:
+          - name: workspace
+            persistentVolumeClaim:
+              claimName: build-workspace
+          - name: audit
+            persistentVolumeClaim:
+              claimName: audit-workspace

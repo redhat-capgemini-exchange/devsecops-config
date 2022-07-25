@@ -6,15 +6,22 @@ namespace:
 	oc new-project ${BUILD_NAMESPACE}
 
 .PHONY: install
-install: install_tasks
+install: install_tasks install_pipelines
 	oc policy add-role-to-user system:image-builder \
 		system:serviceaccount:${BUILD_NAMESPACE}:builder \
 		--namespace=openshift
-	oc apply -f gitops-tasks/image_builder/builder.yaml
-	
+	oc apply -f pipelines/config/builder.yaml
+	oc apply -f pipelines/config/pipelines.yaml
+	oc apply -f pipelines/config/rolebindings.yaml
+
+.PHONY: install_pipelines
+install_pipelines:
+	oc apply -n ${BUILD_NAMESPACE} -f pipelines/pipelines/
+	oc apply -n ${BUILD_NAMESPACE} -f pipelines/rollout/
+
 .PHONY: install_tasks
 install_tasks:
-	oc apply -f gitops-tasks/cluster_tasks/
+	oc apply -f pipelines/cluster_tasks/
 
 .PHONY: cleanup
 cleanup:

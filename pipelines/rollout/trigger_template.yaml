@@ -1,0 +1,38 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: trigger-template-rollout-pipeline
+spec:
+  params:
+    - name: git-revision
+    - name: git-commit-message
+    - name: git-repo-url
+    - name: git-repo-name
+    - name: git-branch-ref
+    - name: content-type
+    - name: pusher-name
+    - name: pusher-email
+    
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        generateName: rollout-pipeline-
+      spec:
+        params:
+          - name: APP_NAME
+            value: $(tt.params.git-repo-name)
+          - name: GIT_REVISION
+            value: $(tt.params.git-revision)
+          #- name: GIT_BRANCH_REF
+          #  value: $(tt.params.git-branch-ref)
+
+        pipelineRef:
+          name: rollout-pipeline
+
+        resources: []
+        #workspaces:
+        #  - name: rollout
+        #    persistentVolumeClaim:
+        #      claimName: rollout-workspace
+          

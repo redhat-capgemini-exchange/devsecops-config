@@ -8,8 +8,6 @@ spec:
       type: string
     - name: GIT_REVISION
       type: string
-    - name: GIT_BRANCH_REF
-      type: string
     - name: RESOURCE
       type: string
   steps:
@@ -20,12 +18,8 @@ spec:
 
         set -x
 
-        IFS="/" read -a branchref <<< "$(params.GIT_BRANCH_REF)"
-        BRANCH="${branchref[-1]}"
-        NAMESPACE="$(params.APP_NAME)-$BRANCH"
-
-        #!/usr/bin/env bash
-
         echo "adding label to deployment config $(params.APP_NAME)"
 
-        oc label $(params.RESOURCE) $(params.APP_NAME) rev=$(params.GIT_REVISION) --overwrite -n $NAMESPACE
+        oc label $(params.RESOURCE) $(params.APP_NAME) rev=$(params.GIT_REVISION) --overwrite -n "$(params.APP_NAME)-main"
+
+        oc label $(params.RESOURCE) $(params.APP_NAME) rev=$(params.GIT_REVISION) --overwrite -n "$(params.APP_NAME)-release"

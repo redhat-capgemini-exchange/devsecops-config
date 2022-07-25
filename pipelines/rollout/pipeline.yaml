@@ -1,0 +1,45 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: rollout-pipeline
+spec:
+  params:
+    - name: APP_NAME
+      type: string
+      default: "nodejs-gitops"
+    - name: GIT_REVISION
+      type: string
+      default: develop
+    - name: GIT_BRANCH_REF
+      type: string
+      default: "foo/bar/develop"
+  #workspaces:
+  #  - name: rollout
+  tasks:
+    - name: sync-apps
+      taskRef:
+        kind: ClusterTask
+        name: argocd-sync-app
+      params:
+        - name: APP_NAME
+          value: $(params.APP_NAME)
+        - name: GIT_REVISION
+          value: $(params.GIT_REVISION)
+      when:
+        - input: $(params.GIT_BRANCH_REF)
+          operator: in
+          values: ["refs/heads/main"]
+
+    - name: label-dc
+      taskRef:
+        kind: ClusterTask
+        name: add-revision-label
+      params:
+        - name: APP_NAME
+          value: $(params.APP_NAME)
+        - name: GIT_REVISION
+          value: $(params.GIT_REVISION)
+        - name: RESOURCE
+          value: dc
+      runAfter:
+        - sync-apps

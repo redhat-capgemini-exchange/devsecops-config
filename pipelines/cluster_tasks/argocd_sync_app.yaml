@@ -4,18 +4,17 @@ metadata:
   name: argocd-sync-app
 spec:
   params:
-    - description: name of the application to sync
-      name: APP_NAME
+    - name: APP_NAME
       type: string
-    - name: GIT_BRANCH_REF
+      description: name of the application to sync    
+    - name: GIT_REVISION
       type: string
-    - default: HEAD
+      default: HEAD
       description: the revision to sync to
-      name: revision
+    - name: argocd-version
       type: string
-    - default: v2.2.2
-      name: argocd-version
-      type: string
+      default: v2.2.2
+      
   stepTemplate:
     envFrom:
       - configMapRef:
@@ -33,12 +32,10 @@ spec:
 
         set -x
 
-        IFS="/" read -a branchref <<< "$(params.GIT_BRANCH_REF)"
-        BRANCH="${branchref[-1]}"
-        APP="$(params.APP_NAME)-$BRANCH"
-
         argocd login "$ARGOCD_SERVER" --username="$ARGOCD_USERNAME" --password="$ARGOCD_PASSWORD" --insecure
 
-        argocd app sync "$APP" --revision "$(params.revision)"
+        argocd app sync "$(params.APP_NAME)-main" --revision "$(params.GIT_REVISION)"
 
-        argocd app wait "$APP" --health
+        argocd app sync "$(params.APP_NAME)-release" --revision "$(params.GIT_REVISION)"
+
+        #argocd app wait "$APP" --health

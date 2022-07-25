@@ -3,8 +3,14 @@ kind: QuayIntegration
 metadata:
   name: quay-registry-integration
 spec:
-  clusterID: openshift
+  #allowlistNamespaces:
+  #  - gitops-rest
+  #  - devsecops-config
+  # organizationPrefix: openshift
   credentialsSecret:
+    name: quay-integration-secret
     namespace: openshift-operators
-    name: quay-integration
+    key: token
+  clusterID: openshift
+  insecureRegistry: false
   quayHostname: <QUAY_ROUTE>

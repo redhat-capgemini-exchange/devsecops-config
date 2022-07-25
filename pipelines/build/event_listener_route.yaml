@@ -1,0 +1,16 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: el-build-pipeline
+  labels:
+    app.kubernetes.io/managed-by: EventListener
+    app.kubernetes.io/part-of: Triggers
+    eventlistener: event-listener-build-pipeline
+spec:
+  to:
+    kind: Service
+    name: el-build-pipeline
+    weight: 100
+  port:
+    targetPort: 8080
+  wildcardPolicy: None

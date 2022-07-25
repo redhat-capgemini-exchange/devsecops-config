@@ -1,0 +1,165 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-pipeline
+spec:
+  params:
+    - name: APP_NAME
+      type: string
+    #  default: "nodejs-gitops"
+    - name: NAMESPACE
+      type: string
+      default: "nodejs-gitops-pipeline"
+    #- name: CONFIG_GIT_REPO
+    #  type: string
+    #  default: "https://github.com/redhat-capgemini-exchange/nodejs-gitops"
+    - name: GIT_REPO
+      type: string
+    #  default: "https://github.com/redhat-capgemini-exchange/nodejs-rest.git"
+    - name: GIT_REVISION
+      type: string
+      default: develop
+    - name: GIT_BRANCH_REF
+      type: string
+      default: "foo/bar/develop"
+    - name: GIT_PUSHER_NAME
+      type: string
+      default: "root"
+    - name: GIT_PUSHER_EMAIL
+      type: string
+      default: "roo@example.com"
+    - name: GIT_COMMIT_MESSAGE
+      type: string
+      default: "commit"
+    - name: BUILDER_VERSION
+      type: string
+      default: "14-ubi8"
+    - name: PATH_CONTEXT
+      type: string
+      default: "."  
+    - name: IMAGE_STREAM
+      type: string
+      default: >-
+        image-registry.openshift-image-registry.svc:5000/nodejs-gitops-pipeline/nodejs-gitops
+  workspaces:
+    - name: workspace
+    - name: audit
+  tasks:
+    - name: git-clone
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      params:
+        - name: url
+          value: $(params.GIT_REPO)
+        - name: revision
+          value: $(params.GIT_REVISION)
+        - name: submodules
+          value: "true"
+        - name: subdirectory
+          value: ""
+        - name: depth
+          value: "1"
+        - name: deleteExisting
+          value: "true"
+      workspaces:
+        - name: output
+          workspace: workspace
+
+    - name: build
+      taskRef:
+        kind: ClusterTask
+        name: s2i-nodejs
+      params:
+        - name: IMAGE
+          value: $(params.IMAGE_STREAM)
+        - name: TLSVERIFY
+          value: "false"
+        - name: PATH_CONTEXT
+          value: $(params.PATH_CONTEXT)
+        - name: VERSION
+          value: $(params.BUILDER_VERSION)
+      runAfter:
+        - git-clone
+      workspaces:
+        - name: source
+          workspace: workspace
+
+    - name: tag-image
+      taskRef:
+        kind: ClusterTask
+        name: tag-image-stream
+      runAfter:
+        - build
+      params:
+        - name: GIT_REVISION
+          value: $(params.GIT_REVISION)
+        - name: GIT_BRANCH_REF
+          value: $(params.GIT_BRANCH_REF)
+        - name: IMAGE_DIGEST
+          value: $(tasks.build.results.IMAGE_DIGEST)
+        - name: IMAGE_NAME
+          value: $(params.APP_NAME)
+        - name: NAMESPACE
+          value: $(params.NAMESPACE)
+
+    - name: rollout
+      taskRef:
+        kind: ClusterTask
+        name: openshift-client
+      params:
+        - name: SCRIPT
+          value: oc rollout latest dc/$(params.APP_NAME) -n "$(params.APP_NAME)-develop"
+      runAfter:
+        - tag-image
+      when:
+        - input: $(params.GIT_BRANCH_REF)
+          operator: in 
+          values: ["refs/heads/develop"]
+      
+    - name: label-dc
+      taskRef:
+        kind: ClusterTask
+        name: add-revision-label
+      params:
+        - name: APP_NAME
+          value: $(params.APP_NAME)
+        - name: GIT_REVISION
+          value: $(params.GIT_REVISION)
+        #- name: GIT_BRANCH_REF
+        #  value: $(params.GIT_BRANCH_REF)
+        - name: RESOURCE
+          value: dc
+      runAfter:
+        - rollout
+
+    - name: create-pr
+      taskRef:
+        kind: ClusterTask
+        name: github-create-pr
+      params:
+        - name: CONFIG_GIT_REPO
+          value: "$(params.GIT_REPO)-config"
+        - name: PATH_CONTEXT
+          value: "app"
+        - name: GIT_REVISION
+          value: $(params.GIT_REVISION)
+        - name: GIT_BRANCH_REF
+          value: $(params.GIT_BRANCH_REF)
+        - name: GIT_PUSHER_NAME
+          value: $(params.GIT_PUSHER_NAME)
+        - name: GIT_PUSHER_EMAIL
+          value: $(params.GIT_PUSHER_EMAIL)
+        - name: GIT_COMMIT_MESSAGE
+          value: $(params.GIT_COMMIT_MESSAGE)
+        - name: IMAGE_DIGEST
+          value: $(tasks.build.results.IMAGE_DIGEST)
+      runAfter:
+        - tag-image
+      when:
+        - input: $(params.GIT_BRANCH_REF)
+          operator: in 
+          values: ["refs/heads/release","refs/heads/main"]
+      workspaces:
+        - name: manifest
+          workspace: audit

@@ -81,17 +81,17 @@ Create an `Access Token` for the application. Give it full rights to the organiz
 Create a secret with the above access token:
 
 ```shell
-oc create secret -n openshift-operators generic quay-integration \
+oc create secret -n openshift-operators generic quay-integration-secret \
     --from-literal=token=<access_token>
 ```
-
-Update `operators/quay/quay-integration.yaml` with the actual Quay instance endpoint.
 
 Deploy the Quay Bridge instance:
 
 ```shell
 oc apply -n openshift-operators -f operators/quay/quay-integration.yaml
 ```
+
+**Important:** update `operators/quay/quay-integration.yaml` with the actual Quay instance's endpoint URL.
 
 See [https://github.com/quay/quay-bridge-operator](https://github.com/quay/quay-bridge-operator) for more details on the operator.
 
