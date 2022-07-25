@@ -1,6 +1,6 @@
 # devsecops-config
 
-The `devsecops-config` repo provides a collection of instructions, deployment configurations, sample files etc. to create a DevSecOps CICD setup on red Hat OpenShift.
+The `devsecops-config` repo provides a collection of instructions, deployment configurations, sample files etc. to create a DevSecOps CICD setup on Red Hat OpenShift.
 
 It uses several technologies such as:
 

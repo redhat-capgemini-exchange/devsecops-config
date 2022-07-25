@@ -17,17 +17,15 @@ oc get pods -n openshift-gitops
 
 That's all ...
 
-## Configure Red Hat Quay
+## Install Red Hat Quay
 
-### Install OpenShift Data Foundations
+### Prerequisite: OpenShift Data Foundations
 
-Before you begin:
-
-Red Hat Quay uses some Red Hat Data Foundation APIs. To install the ODF operator, follow the instructions [here](https://access.redhat.com/documentation/en-us/red_hat_openshift_data_foundation/4.10).
+Red Hat Quay uses some Red Hat OpenShift Data Foundation (ODF) APIs. To install the ODF operator, follow the instructions [here](https://access.redhat.com/documentation/en-us/red_hat_openshift_data_foundation/4.10).
 
 **Important:** Create a default `StorageSystem` and wait until it is operational !
 
-### Install the Quay operator
+### Install the Red Hat Quay operator
 
 Deploy the initial config params for the Quay operator installation:
 
@@ -47,19 +45,21 @@ Deploy the default Quay instance:
 oc create -n openshift-operators -f operators/quay/quay-registry.yaml
 ```
 
-#### Create the admin user
+#### Create the Quay admin user
 
 To create a default `quayadmin` user, make a call to Quay's management API:
 
 ```shell
 # get the quay api endpoint
-oc get quayregistry -n openshift-operators quay-registry -o jsonpath="{.status.registryEndpoint}"
-
-export QUAY=https://quay-registry-.... 
+oc get route quay-registry-quay -n openshift-operators
 ```
 
 ```shell
-curl -X POST -k  "$QUAY/api/v1/user/initialize" \
+# export the route URL
+export QUAY=quay-registry-.... 
+
+# create the user
+curl -X POST -k  "https://$QUAY/api/v1/user/initialize" \
     --header 'Content-Type: application/json' \
     --data '{ "username": "quayadmin", "password":"quaypass123", "email": "quayadmin@example.com", "access_token": true}'
 
