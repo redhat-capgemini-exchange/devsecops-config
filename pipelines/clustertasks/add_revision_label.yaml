@@ -3,6 +3,8 @@ apiVersion: tekton.dev/v1beta1
 metadata:
   name: add-revision-label
 spec:
+  description: >-
+    Add a label (default 'rev') to a resource with a reference to a git revision.
   params:
     - name: APP_NAME
       type: string
@@ -12,6 +14,9 @@ spec:
       type: string
     - name: RESOURCE
       type: string
+    - name: LABEL
+      type: string
+      default: 'rev'
   steps:
     - name: tag-image
       image: quay.io/openshift/origin-cli:latest
@@ -22,4 +27,4 @@ spec:
 
         echo "adding label to deployment config $(params.APP_NAME)"
 
-        oc label $(params.RESOURCE) $(params.APP_NAME) rev=$(params.GIT_REVISION) --overwrite -n "$(params.NAMESPACE)"
+        oc label $(params.RESOURCE) $(params.APP_NAME) "$(params.LABEL)=$(params.GIT_REVISION)" --overwrite -n "$(params.NAMESPACE)"

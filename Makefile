@@ -21,10 +21,10 @@ install_pipelines:
 
 .PHONY: install_tasks
 install_tasks:
-	oc apply -f pipelines/cluster_tasks/
+	oc apply -f pipelines/clustertasks/
 
 .PHONY: cleanup
 cleanup:
 	oc delete build --all -n ${BUILD_NAMESPACE}
-	oc delete pod --field-selector=status.phase==Succeeded -n ${BUILD_NAMESPACE}
+	oc delete pipelineruns,taskruns --all -n ${BUILD_NAMESPACE}
 	oc delete pod --field-selector=status.phase==Succeeded -n ${BUILD_NAMESPACE}

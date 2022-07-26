@@ -22,6 +22,8 @@ spec:
         params:
           - name: APP_NAME
             value: $(tt.params.git-repo-name)
+          - name: GIT_REPO
+            value: $(tt.params.git-repo-url)
           - name: GIT_REVISION
             value: $(tt.params.git-revision)
           - name: GIT_BRANCH_REF

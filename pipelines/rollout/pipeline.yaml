@@ -20,7 +20,7 @@ spec:
   workspaces:
     - name: audit
   tasks:
-    - name: sync-apps
+    - name: sync-app
       taskRef:
         kind: ClusterTask
         name: argocd-sync-app
@@ -55,7 +55,7 @@ spec:
         - name: RESOURCE
           value: dc
       runAfter:
-        - sync-apps
+        - sync-app
 
     - name: label-dc-release
       taskRef:
@@ -71,4 +71,4 @@ spec:
         - name: RESOURCE
           value: dc
       runAfter:
-        - sync-apps
+        - sync-app

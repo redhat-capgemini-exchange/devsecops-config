@@ -8,9 +8,9 @@ spec:
   params:
     - name: GIT_BRANCH_REF
       type: string
-      description: The GitHub ref from the webhook payload
+      description: "The GitHub ref from the webhook payload (property body.ref)"
   results:
-    - description: The GitHub branch the webhook call originated from
+    - description: "The GitHub branch the webhook was call originated from e.g. 'main'"
       name: GIT_BRANCH
   steps:
     - name: tag-image

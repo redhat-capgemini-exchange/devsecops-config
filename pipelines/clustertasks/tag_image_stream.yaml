@@ -3,6 +3,8 @@ apiVersion: tekton.dev/v1beta1
 metadata:
   name: tag-image-stream
 spec:
+  description: >-
+    Tag an image stream with a reference to the git revision and branch.
   params:
     - name: GIT_REVISION
       type: string

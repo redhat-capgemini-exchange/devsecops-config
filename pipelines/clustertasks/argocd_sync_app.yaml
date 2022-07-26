@@ -3,6 +3,8 @@ apiVersion: tekton.dev/v1beta1
 metadata:
   name: argocd-sync-app
 spec:
+  description: >-
+    Trigger ArgoCD to sync the applications 'release' and 'main' deployments. 
   params:
     - name: APP_NAME
       type: string

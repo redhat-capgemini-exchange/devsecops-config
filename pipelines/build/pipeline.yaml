@@ -163,3 +163,5 @@ spec:
       workspaces:
         - name: manifest
           workspace: audit
+        - name: source
+          workspace: workspace
