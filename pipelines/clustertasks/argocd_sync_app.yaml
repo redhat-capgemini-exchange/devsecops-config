@@ -34,12 +34,12 @@ spec:
       name: BASE_NAME
   steps:
     - name: git-checkout-repo
-      image: image-registry.openshift-image-registry.svc:5000/openshift/gitops-cli:1.0.0
+      image: image-registry.openshift-image-registry.svc:5000/devsecops-config/gitops-cli:1.0.0
       workingDir: $(workspaces.manifest.path)
       script: |
         #!/usr/bin/env bash
 
-        set -x
+        #set -x
 
         # setup gh cli
         gh auth setup-git
@@ -70,7 +70,7 @@ spec:
       script: |
         #!/usr/bin/env bash
 
-        set -x
+        #set -x
 
         cd manifest-workdir
 

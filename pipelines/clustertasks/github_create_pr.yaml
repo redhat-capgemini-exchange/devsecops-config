@@ -33,12 +33,12 @@ spec:
           name: github-secrets
   steps:
     - name: git-checkout-repo
-      image: image-registry.openshift-image-registry.svc:5000/openshift/gitops-cli:1.0.0
+      image: image-registry.openshift-image-registry.svc:5000/devsecops-config/gitops-cli:1.0.0
       workingDir: $(workspaces.manifest.path)
       script: |
         #!/usr/bin/env bash
 
-        set -x
+        #set -x
 
         # setup gh cli
         gh auth setup-git
@@ -89,12 +89,12 @@ spec:
           name: gen-source
 
     - name: create-patch
-      image: image-registry.openshift-image-registry.svc:5000/openshift/gitops-cli:1.0.0
+      image: image-registry.openshift-image-registry.svc:5000/devsecops-config/gitops-cli:1.0.0
       workingDir: $(workspaces.manifest.path)
       script: |
         #!/usr/bin/env bash
 
-        set -x
+        #set -x
 
         # extract the branch ref
         IFS="/" read -a branchref <<< "$(params.GIT_BRANCH_REF)"
@@ -112,93 +112,31 @@ spec:
         - mountPath: /gen-source
           name: gen-source
 
-    - name: git-log-to-markdown
-      image: image-registry.openshift-image-registry.svc:5000/openshift/gitops-cli:1.0.0
+    - name: git-log
+      image: image-registry.openshift-image-registry.svc:5000/devsecops-config/gitops-cli:1.0.0
       workingDir: $(workspaces.manifest.path)
       script: |
         #!/usr/bin/env bash
 
-        set -x 
+        # extract the branch ref
+        IFS="/" read -a branchref <<< "$(params.GIT_BRANCH_REF)"
+        BRANCH="${branchref[-1]}"
 
-        # Generates git log grouped by day and outputs to markdown file
-        #
-        # optional parameters
-        # -a, --author       to filter by author
-        # -s, --since        to select start date
-        # -u, --until        to select end date
+        cd $(workspaces.source.path)
 
-        git-log-to-markdown () {
-          local NEXT=$(date +%F)
-
-          local RED="\x1B[31m"
-          local YELLOW="\x1B[32m"
-          local BLUE="\x1B[34m"
-          local RESET="\x1B[0m"
-
-          local SINCE="1970-01-01"
-          local UNTIL=$NEXT
-
-
-          for i in "$@"
-          do
-          case $i in
-            -a=*|--author=*)
-            local AUTHOR="${i#*=}"
-            shift
-            ;;
-            -s=*|--since=*)
-            SINCE="${i#*=}"
-            shift
-            ;;
-            -u=*|--until=*)
-            UNTIL="${i#*=}"
-            shift
-            ;;
-            *)
-              # unknown option
-            ;;
-          esac
-          done
-
-          local LOG_FORMAT=" %Cgreen*%Creset %s"
-          
-          if [ -z "$AUTHOR" ]
-          then
-            LOG_FORMAT="$LOG_FORMAT %Cblue(%an)%Creset"
-          else
-            echo "# Gitlog"
-          fi
-
-          git log --no-merges --author="${AUTHOR}" --since="${SINCE}" --until="${UNTIL}" --format="%cd" --date=short | sort -u | while read DATE ; do
-
-            local GIT_PAGER=$(git log --no-merges --reverse --format="${LOG_FORMAT}" --since="${DATE} 00:00:00" --until="${DATE} 23:59:59" --author="${AUTHOR}")
-
-            if [ ! -z "$GIT_PAGER" ]
-            then
-              echo
-              echo -e "## $DATE"
-              echo -e "${GIT_PAGER}"
-            fi
-
-          done
-
-        }
-
-        cd $(workspaces.source.path) && git log --all --oneline > "$(workspaces.manifest.path)/manifest-workdir/$(params.PATH_CONTEXT)/gitlog.md"
-
-        cat "$(workspaces.manifest.path)/manifest-workdir/$(params.PATH_CONTEXT)/gitlog.md"
+        git log --all --oneline > "$(workspaces.manifest.path)/manifest-workdir/$(params.PATH_CONTEXT)/$BRANCH/gitlog.txt"
         
       volumeMounts:
         - mountPath: /gen-source
           name: gen-source
 
     - name: create-pull-request
-      image: image-registry.openshift-image-registry.svc:5000/openshift/gitops-cli:1.0.0
+      image: image-registry.openshift-image-registry.svc:5000/devsecops-config/gitops-cli:1.0.0
       workingDir: $(workspaces.manifest.path)
       script: |
         #!/usr/bin/env bash
 
-        set -x
+        #set -x
 
         # extract the branch ref
         IFS="/" read -a branchref <<< "$(params.GIT_BRANCH_REF)"
@@ -224,7 +162,7 @@ spec:
         COMMIT_MSG="$PR"
         AUDIT_MSG="$(date +%s): $PR $(params.GIT_PUSHER_NAME)/$(params.GIT_PUSHER_EMAIL)  $REVISION   $(params.IMAGE_DIGEST)  $(params.GIT_COMMIT_MESSAGE)"
 
-        git add ./$(params.PATH_CONTEXT)/gitlog.md
+        git add ./$(params.PATH_CONTEXT)/$BRANCH/gitlog.txt
 
         git add ./$(params.PATH_CONTEXT)/$BRANCH/manifest.txt
 

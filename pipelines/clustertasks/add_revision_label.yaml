@@ -23,7 +23,7 @@ spec:
       script: |
         #!/usr/bin/env bash
 
-        set -x
+        #set -x
 
         echo "adding label to deployment config $(params.APP_NAME)"
 

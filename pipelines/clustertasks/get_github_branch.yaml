@@ -14,7 +14,7 @@ spec:
       name: GIT_BRANCH
   steps:
     - name: tag-image
-      image: image-registry.openshift-image-registry.svc:5000/openshift/gitops-cli:1.0.0
+      image: image-registry.openshift-image-registry.svc:5000/devsecops-config/gitops-cli:1.0.0
       script: |
         #!/usr/bin/env bash
 
