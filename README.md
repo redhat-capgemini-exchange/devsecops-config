@@ -48,21 +48,21 @@ There are two generic Tekton pipelines to support secure builds and auditable ro
 * `build-pipeline`, defined in `pipelines/build`
 * `rollout-pipeline`, defined in `pipelines/rollout`
 
-The pipelines use custom `ClusterTasks` and a custom container image.
+The pipelines use custom `ClusterTasks` and a custom `container image`.
 
-To deploy the pipelines and all other resoureces:
+Create the namespace first:
 
 ```shell
 make namespace
 ```
 
-followed by:
+To deploy the pipelines and all resoureces:
 
 ```shell
 make install
 ```
 
-Validat that everything is deployed correctly by checking the `sync` status of all resources in the ArgoCD web UI.
+**Note:** you can verify that everything is deployed correctly by checking the `sync` status of all resources in the ArgoCD web UI.
 
 ### Configuration and secrets
 
