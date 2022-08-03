@@ -16,7 +16,7 @@ Additionally multi-cluster management tools can be added:
 
 ## Installation
 
-See [operator/README.md](operators/README.md) for a step-by-step guid how to install and configure the operators.
+See [operator/README.md](operators/README.md) for a step-by-step guid how to install and configure the operators used in the devsecops-config setup.
 
 
 ## OpenShift GitOps

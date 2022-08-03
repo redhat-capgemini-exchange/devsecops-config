@@ -45,6 +45,8 @@ Deploy the default Quay instance:
 oc create -n openshift-operators -f operators/quay/quay-registry.yaml
 ```
 
+**Note:** it might take a couple of minutes until all the Quay services are up-and-running. Check `Workload/Pods` in the OpenShift web console before moving on to the next configuration step.
+
 #### Create the Quay admin user
 
 To create a default `quayadmin` user, make a call to Quay's management API:
@@ -57,7 +59,9 @@ oc get route quay-registry-quay -n openshift-operators
 ```shell
 # export the route URL
 export QUAY=quay-registry-.... 
+```
 
+```shell
 # create the user
 curl -X POST -k  "https://$QUAY/api/v1/user/initialize" \
     --header 'Content-Type: application/json' \
@@ -87,11 +91,11 @@ oc create secret -n openshift-operators generic quay-integration-secret \
 
 Deploy the Quay Bridge instance:
 
+**Important:** update `operators/quay/quay-integration.yaml` with the actual Quay instance's endpoint URL.
+
 ```shell
 oc apply -n openshift-operators -f operators/quay/quay-integration.yaml
 ```
-
-**Important:** update `operators/quay/quay-integration.yaml` with the actual Quay instance's endpoint URL.
 
 See [https://github.com/quay/quay-bridge-operator](https://github.com/quay/quay-bridge-operator) for more details on the operator.
 
