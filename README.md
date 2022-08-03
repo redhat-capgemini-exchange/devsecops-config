@@ -14,6 +14,10 @@ Additionally multi-cluster management tools can be added:
 * Red Hat OpenShift Advanced Cluster Manager for Kubernetes
 * Red Hat OpenShift Advanced Cluster Security for Kubernetes
 
+## Concept and Architecture
+
+TBD
+
 ## Preparation
 
 See [operator/README.md](operators/README.md) for a step-by-step guid how to install and configure the operators used in the devsecops-config setup.
