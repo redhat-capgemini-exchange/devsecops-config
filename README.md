@@ -14,12 +14,12 @@ Additionally multi-cluster management tools can be added:
 * Red Hat OpenShift Advanced Cluster Manager for Kubernetes
 * Red Hat OpenShift Advanced Cluster Security for Kubernetes
 
-## Installation
+## Preparation
 
 See [operator/README.md](operators/README.md) for a step-by-step guid how to install and configure the operators used in the devsecops-config setup.
 
 
-## OpenShift GitOps
+## Accessing OpenShift GitOps
 
 A default instance is installed in the `openshift-gitops` namespace. 
 
@@ -41,7 +41,34 @@ Get the ArgoCD route:
 oc get route openshift-gitops-server -n openshift-gitops
 ```
 
+## Deploy the Pipelines
+
+There are two generic Tekton pipelines to support secure builds and auditable rollouts of container images:
+
+* `build-pipeline`, defined in `pipelines/build`
+* `rollout-pipeline`, defined in `pipelines/rollout`
+
+The pipelines use custom `ClusterTasks` and a custom conatiner image.
+
+To deploy the pipelines and all other resoureces run:
+
+```shell
+make namespace
+```
+
+This creates the `devsecops-config` namespace. Next run
+
+```shell
+make install
+```
+
+to install the remaining resources. 
+
+Validat that everything is deployed correctly by checking the `sync` status of all resources in the ArgoCD web UI.
+
 ### Configuration and secrets
+
+Before you can run any of these pipelines, make sure that all configs and secrets are deployed.
 
 Make a copy of the `secrets/*.example.yaml` files and edit their contents to match your environment.
 
