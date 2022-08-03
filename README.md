@@ -56,9 +56,7 @@ To deploy the pipelines and all other resoureces:
 make namespace
 ```
 
-This creates the `devsecops-config` namespace.
-
-Install the remaining resources:
+followed by:
 
 ```shell
 make install
