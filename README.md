@@ -62,11 +62,11 @@ To deploy the pipelines and all resoureces:
 make install
 ```
 
-**Note:** you can verify that everything is deployed correctly by checking the `sync` status of all resources in the ArgoCD web UI.
+**Note:** you can verify that everything is deployed correctly by checking the `sync` status of all resources in the Red Hat OpenShift GitOps UI.
 
 ### Configuration and secrets
 
-Before you can run any of these pipelines, make sure that all configs and secrets are deployed.
+Before you can start any pipeline runs, make sure that all configs and secrets are deployed.
 
 Make a copy of the `secrets/*.example.yaml` files and edit their contents to match your environment.
 
