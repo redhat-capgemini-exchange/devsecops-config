@@ -19,7 +19,7 @@ Additionally multi-cluster management tools can be added:
 See [operator/README.md](operators/README.md) for a step-by-step guid how to install and configure the operators used in the devsecops-config setup.
 
 
-## Accessing OpenShift GitOps
+### Accessing OpenShift GitOps
 
 A default instance is installed in the `openshift-gitops` namespace. 
 
@@ -41,7 +41,7 @@ Get the ArgoCD route:
 oc get route openshift-gitops-server -n openshift-gitops
 ```
 
-## Deploy the Pipelines
+### Deploy the Pipelines
 
 There are two generic Tekton pipelines to support secure builds and auditable rollouts of container images:
 
@@ -64,7 +64,7 @@ make install
 
 **Note:** you can verify that everything is deployed correctly by checking the `sync` status of all resources in the Red Hat OpenShift GitOps UI.
 
-### Configuration and secrets
+#### Configuration and secrets
 
 Before you can start any pipeline runs, make sure that all configs and secrets are deployed.
 
