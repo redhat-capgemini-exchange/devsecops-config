@@ -23,30 +23,9 @@ TBD
 
 ## Preparation
 
+### Operators
+
 See [operator/README.md](operators/README.md) for a step-by-step guid how to install and configure the operators used in the devsecops-config setup.
-
-
-### Accessing OpenShift GitOps
-
-A default instance is installed in the `openshift-gitops` namespace. 
-
-Verify that the default GitOps instance is up-and-running:
-
-```shell
-oc get pods -n openshift-gitops
-```
-
-The instance has a default user `admin`. A password is created during the inital deployment. In order to retrieve the password, run:
-
-```shell
-oc extract secret/openshift-gitops-cluster -n openshift-gitops --to=-
-```
-
-Get the ArgoCD route:
-
-```shell
-oc get route openshift-gitops-server -n openshift-gitops
-```
 
 ### Deploy the Pipelines
 
@@ -86,3 +65,26 @@ oc apply -f secrets/argocd_secrets.yaml -n devsecops-config
 oc apply -f secrets/argocd_configmap.yaml -n devsecops-config
 
 ```
+
+### Accessing Red Hat OpenShift GitOps
+
+A default instance is installed in the `openshift-gitops` namespace. 
+
+Verify that the default GitOps instance is up-and-running:
+
+```shell
+oc get pods -n openshift-gitops
+```
+
+The instance has a default user `admin`. A password is created during the inital deployment. In order to retrieve the password, run:
+
+```shell
+oc extract secret/openshift-gitops-cluster -n openshift-gitops --to=-
+```
+
+Get the ArgoCD route:
+
+```shell
+oc get route openshift-gitops-server -n openshift-gitops
+```
+
