@@ -88,10 +88,12 @@ oc apply -f secrets/argocd_configmap.yaml -n devsecops-config
 
 #### GitHub Access Token
 
-Creating pull request and updating repo files requires a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) for your GitHub account.
+Updating repo files and creating pull request requires a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) for your GitHub account.
 
 Deploy the GitHub secrets:
 
 ```shell
 oc apply -f secrets/github_secrets.yaml -n devsecops-config
 ```
+
+**Note:** currently only GitHub is supported. Using a *different flavour* of git (e.g. GitLab, Gitea etc.) would require modification of some of the pipeline steps.
