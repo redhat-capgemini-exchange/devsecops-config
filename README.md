@@ -1,18 +1,21 @@
 # devsecops-config
 
-The `devsecops-config` repo provides a collection of instructions, deployment configurations, sample files etc. to create a DevSecOps CICD setup on Red Hat OpenShift.
+This is a generic implementation of a GitOps application delivery workflow on Red Hat OpenShift.
 
 It uses several technologies such as:
 
 * Red Hat OpenShift GitOps (a.k.a ArgoCD)
 * Red Hat OpenShift Pipelines (a.k.a. Tekton)
-* Red Hat Quay (and Quay Bridge Operator)
+* Red Hat Quay and the Red Hat Quay Bridge Operator
 * Red Hat Quay Container Security Operator
 
-Additionally multi-cluster management tools can be added:
+The implementation assumes a [Gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) workflow to develop and release software. A `Config Git Repository` allows for a declarative approach to application delivery. Using Git to controll the rollout of container images via pull requests makes the software delivery workflow revision and audit-proof.
+
+To support hybrid-cloud and multi-cluster deployments, additional management tools can be added:
 
 * Red Hat OpenShift Advanced Cluster Manager for Kubernetes
 * Red Hat OpenShift Advanced Cluster Security for Kubernetes
+
 
 ## Concept and Architecture
 
