@@ -42,7 +42,7 @@ Create the namespace first:
 make namespace
 ```
 
-To deploy the pipelines and all resoureces:
+To deploy the pipelines and all resources:
 
 ```shell
 make install
@@ -66,7 +66,7 @@ oc apply -f secrets/argocd_configmap.yaml -n devsecops-config
 
 ```
 
-### Accessing Red Hat OpenShift GitOps
+##### Accessing Red Hat OpenShift GitOps
 
 A default instance is installed in the `openshift-gitops` namespace. 
 
