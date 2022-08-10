@@ -25,18 +25,22 @@ spec:
   steps:
     - name: secscan-report
       image: image-registry.openshift-image-registry.svc:5000/devsecops-config/gitops-cli:1.0.0
-      workingDir: $(workspaces.manifest.path)
       script: |
         #!/usr/bin/env bash
 
         # extract the branch ref
         IFS="/" read -a branchref <<< "$(params.GIT_BRANCH_REF)"
-
         BRANCH="${branchref[-1]}"
+
+        # extract the namespace/organization
+        IFS="/" read -a organization <<< "$(params.GIT_REPO_FULL_NAME)"
+        NAMESPACE="${organization[0]}"
 
         echo $QUAY_ENDPOINT
         echo $QUAY_TOKEN
         echo $GITHUB_TOKEN
+
+        echo $NAMESPACE
 
         python --version
 
@@ -44,4 +48,4 @@ spec:
 
         ls -la 
 
-        #python secscan.py $(params.NAMESPACE) $(params.IMAGE_NAME) $(params.TAG) $(params.GIT_REPO_FULL_NAME)
+        #python secscan.py $NAMESPACE $(params.IMAGE_NAME) $(params.TAG) $(params.GIT_REPO_FULL_NAME)
