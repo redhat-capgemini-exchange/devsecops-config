@@ -23,6 +23,7 @@ TBD
 
 ## Preparation
 
+
 ### Operators
 
 See [operator/README.md](operators/README.md) for a step-by-step guid how to install and configure the operators used in the devsecops-config setup.
@@ -50,6 +51,7 @@ make install
 
 **Note:** you can verify that everything is deployed correctly by checking the `sync` status of all resources in the Red Hat OpenShift GitOps UI.
 
+
 ### Configuration and secrets
 
 Before you can start any pipeline runs, make sure that all configs and secrets are deployed.
@@ -72,6 +74,8 @@ The instance has a default user `admin`. A password is created during the inital
 ```shell
 oc extract secret/openshift-gitops-cluster -n openshift-gitops --to=-
 ```
+
+**Note:** this password is also used to access the Argo CD web UI.
 
 Get the ArgoCD route:
 
