@@ -11,6 +11,8 @@ spec:
       description: "The GitHub ref from the webhook payload (property body.ref)"
     - name: GIT_REPO_FULL_NAME
       type: string
+    - name: NAMESPACE
+      type: string
     - name: IMAGE_NAME
       type: string
     - name: TAG
@@ -32,20 +34,4 @@ spec:
         IFS="/" read -a branchref <<< "$(params.GIT_BRANCH_REF)"
         BRANCH="${branchref[-1]}"
 
-        # extract the namespace/organization
-        IFS="/" read -a organization <<< "$(params.GIT_REPO_FULL_NAME)"
-        NAMESPACE="${organization[0]}"
-
-        echo $QUAY_ENDPOINT
-        echo $QUAY_TOKEN
-        echo $GITHUB_TOKEN
-
-        echo $NAMESPACE
-
-        python --version
-
-        pwd
-
-        ls -la 
-
-        #python secscan.py $NAMESPACE $(params.IMAGE_NAME) $(params.TAG) $(params.GIT_REPO_FULL_NAME)
+        python secscan.py $(params.NAMESPACE) $(params.IMAGE_NAME) $(params.TAG) $(params.GIT_REPO_FULL_NAME)

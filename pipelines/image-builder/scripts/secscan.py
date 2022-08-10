@@ -35,7 +35,8 @@ if __name__ == '__main__':
     tags = get_repo_tags(QUAY_ENDPOINT, QUAY_TOKEN, NAMESPACE, IMAGE_STREAM)
 
     if tags == {}:
-        sys.exit(1)  # this is not good
+        print(f"  --> Aborting. Can't find repo {NAMESPACE}/{IMAGE_STREAM}")
+        sys.exit(0)  # this is not good
 
     # look for a specific TAG
     manifest_ref = ''
@@ -45,18 +46,21 @@ if __name__ == '__main__':
             break
 
     if manifest_ref == '':
-        sys.exit(1)  # this is not good
+        print(f"  --> Aborting. Can't find tag {TAG} in {NAMESPACE}/{IMAGE_STREAM}")
+        sys.exit(0)  # this is not good
 
     # get the security scan results
     scan = get_manifest_security(
         QUAY_ENDPOINT, QUAY_TOKEN, NAMESPACE, IMAGE_STREAM, manifest_ref)
 
     if scan == {}:
-        sys.exit(1)  # this is not good
+        print(f"  --> Aborting. No security scan results for {NAMESPACE}/{IMAGE_STREAM}")
+        sys.exit(0)  # this is not good
 
     # only continue if the image was actually scanned
     if not scan['status'] == 'scanned':
-        sys.exit(0)  # abort, but no error
+        print(f"  --> Aborting. No security scan results for {NAMESPACE}/{IMAGE_STREAM}")
+        sys.exit(0)
 
     # get all the features, i.e. installed packages
     features = scan['data']['Layer']['Features']
