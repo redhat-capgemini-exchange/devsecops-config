@@ -25,9 +25,9 @@ spec:
   stepTemplate:
     envFrom:
       - configMapRef:
-          name: argocd-env-configmap
+          name: pipeline-env-configmap
       - secretRef:
-          name: argocd-env-secret
+          name: pipeline-env-secrets
     resources: {}
   results:
     - description: Name of the source repo
@@ -77,7 +77,7 @@ spec:
         # read the app config
         source ./$(params.PATH_CONTEXT)/config/app.config
 
-        argocd login "$ARGOCD_SERVER" --username="$ARGOCD_USERNAME" --password="$ARGOCD_PASSWORD" --insecure
+        argocd login "$ARGOCD_ENDPOINT" --username="$ARGOCD_USERNAME" --password="$ARGOCD_PASSWORD" --insecure
 
         argocd app sync "$REPO_NAME-main" --revision "$(params.GIT_REVISION)"
         

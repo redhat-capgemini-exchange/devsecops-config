@@ -6,16 +6,10 @@ spec:
   params:
     - name: APP_NAME
       type: string
-    #  default: "nodejs-gitops"
-    #- name: NAMESPACE
-    #  type: string
-    #  default: "nodejs-gitops-pipeline"
-    #- name: CONFIG_GIT_REPO
-    #  type: string
-    #  default: "https://github.com/redhat-capgemini-exchange/nodejs-gitops"
     - name: GIT_REPO
       type: string
-    #  default: "https://github.com/redhat-capgemini-exchange/nodejs-rest.git"
+    - name: GIT_REPO_FULL_NAME
+      type: string
     - name: GIT_REVISION
       type: string
       default: develop
@@ -39,8 +33,6 @@ spec:
       default: "."  
     - name: IMAGE_STREAM
       type: string
-    #  default: >-
-    #    image-registry.openshift-image-registry.svc:5000/nodejs-gitops-pipeline/nodejs-gitops
   workspaces:
     - name: workspace
     - name: audit
@@ -103,6 +95,20 @@ spec:
         - name: NAMESPACE
           value: "$(params.APP_NAME)-develop"
 
+    - name: security-scan
+      taskRef:
+        kind: ClusterTask
+        name: github-create-secscan-issues
+      runAfter:
+        - tag-image
+      params:
+        - name: GIT_BRANCH_REF
+          value: $(params.GIT_BRANCH_REF)
+        - name: GIT_REPO_FULL_NAME
+          value: $(params.GIT_REPO_FULL_NAME)
+        - name: IMAGE_NAME
+          value: $(params.APP_NAME)
+        
     - name: rollout
       taskRef:
         kind: ClusterTask

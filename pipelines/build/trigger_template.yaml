@@ -8,6 +8,7 @@ spec:
     - name: git-commit-message
     - name: git-repo-url
     - name: git-repo-name
+    - name: git-repo-cn
     - name: git-branch-ref
     - name: content-type
     - name: pusher-name
@@ -21,12 +22,10 @@ spec:
         params:
           - name: APP_NAME
             value: $(tt.params.git-repo-name)
-          #- name: NAMESPACE
-          #  value: "nodejs-gitops-pipeline"
-          #- name: CONFIG_GIT_REPO
-          #  value: "https://github.com/redhat-capgemini-exchange/nodejs-gitops"
           - name: GIT_REPO
-            value: "$(tt.params.git-repo-url)"
+            value: $(tt.params.git-repo-url)
+          - name: GIT_REPO_FULL_NAME
+            value: $(tt.params.git-repo-cn)
           - name: GIT_REVISION
             value: $(tt.params.git-revision)
           - name: GIT_BRANCH_REF

@@ -12,6 +12,8 @@ spec:
       value: $(body.repository.url)
     - name: git-repo-name
       value: $(body.repository.name)
+    - name: git-repo-cn
+      value: $(body.repository.full_name)
     - name: content-type
       value: $(header.Content-Type)
     - name: pusher-name
