@@ -16,13 +16,12 @@ To support hybrid-cloud and multi-cluster deployments, additional management too
 * Red Hat OpenShift Advanced Cluster Manager for Kubernetes
 * Red Hat OpenShift Advanced Cluster Security for Kubernetes
 
-![GitOps application delivery workflow](docs/gitops1.png)
 
 ## Concept and Architecture
 
 TBD
 
-![GitOps application delivery workflow](docs/gitops3.png)
+![GitOps application delivery workflow](docs/gitops_architecture.png)
 
 ## Preparation
 
