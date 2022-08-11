@@ -4,7 +4,7 @@ This is a generic implementation of a GitOps application delivery workflow on Re
 
 It uses several technologies such as:
 
-* Red Hat OpenShift GitOps (a.k.a ArgoCD)
+* Red Hat OpenShift GitOps (a.k.a Argo CD)
 * Red Hat OpenShift Pipelines (a.k.a. Tekton)
 * Red Hat Quay and the Red Hat Quay Bridge Operator
 * Red Hat Quay Container Security Operator
@@ -16,6 +16,7 @@ To support hybrid-cloud and multi-cluster deployments, additional management too
 * Red Hat OpenShift Advanced Cluster Manager for Kubernetes
 * Red Hat OpenShift Advanced Cluster Security for Kubernetes
 
+![GitOps application delivery workflow](docs/gitops1.png)
 
 ## Concept and Architecture
 

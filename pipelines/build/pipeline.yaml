@@ -95,21 +95,21 @@ spec:
         - name: NAMESPACE
           value: "$(params.APP_NAME)-develop"
 
-    - name: security-scan
-      taskRef:
-        kind: ClusterTask
-        name: github-create-secscan-issues
-      runAfter:
-        - tag-image
-      params:
-        - name: GIT_BRANCH_REF
-          value: $(params.GIT_BRANCH_REF)
-        - name: GIT_REPO_FULL_NAME
-          value: $(params.GIT_REPO_FULL_NAME)
-        - name: IMAGE_NAME
-          value: $(params.APP_NAME)
-        - name: NAMESPACE
-          value: "$(params.APP_NAME)-develop"
+    #- name: security-scan
+    #  taskRef:
+    #    kind: ClusterTask
+    #    name: github-create-secscan-issues
+    #  runAfter:
+    #    - tag-image
+    #  params:
+    #    - name: GIT_BRANCH_REF
+    #      value: $(params.GIT_BRANCH_REF)
+    #    - name: GIT_REPO_FULL_NAME
+    #      value: $(params.GIT_REPO_FULL_NAME)
+    #    - name: IMAGE_NAME
+    #      value: $(params.APP_NAME)
+    #    - name: NAMESPACE
+    #      value: "$(params.APP_NAME)-develop"
         
     - name: rollout
       taskRef:
