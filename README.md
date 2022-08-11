@@ -9,7 +9,6 @@ It uses several technologies such as:
 * Red Hat Quay and the Red Hat Quay Bridge Operator
 * Red Hat Quay Container Security Operator
 
-The implementation assumes a [Gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) workflow to develop and release software. A `Config Git Repository` allows for a declarative approach to application delivery. Using Git to controll the rollout of container images via pull requests makes the software delivery workflow revision and audit-proof.
 
 To support hybrid-cloud and multi-cluster deployments, additional management tools can be added:
 
@@ -19,7 +18,7 @@ To support hybrid-cloud and multi-cluster deployments, additional management too
 
 ## Concept and Architecture
 
-TBD
+The implementation assumes a [Gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) workflow to develop and release software. A `Config Git Repository` allows for a declarative approach to application delivery. Using Git to controll the rollout of container images via pull requests makes the software delivery workflow revision and audit-proof.
 
 ![GitOps application delivery workflow](docs/gitops_architecture.png)
 
