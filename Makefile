@@ -10,7 +10,7 @@ install: install_tasks install_pipelines
 	oc policy add-role-to-user system:image-builder \
 		system:serviceaccount:${BUILD_NAMESPACE}:builder \
 		--namespace=openshift
-	oc apply -f pipelines/config/builder.yaml
+	oc apply -f image-builder/builder.yaml
 	oc apply -f pipelines/config/pipelines.yaml
 	oc apply -f pipelines/config/rolebindings.yaml
 
