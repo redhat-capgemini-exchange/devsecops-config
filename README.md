@@ -22,7 +22,7 @@ To support hybrid-cloud and multi-cluster deployments, additional management too
 
 TBD
 
-![GitOps application delivery workflow](docs/gitops2.png)
+![GitOps application delivery workflow](docs/gitops3.png)
 
 ## Preparation
 
