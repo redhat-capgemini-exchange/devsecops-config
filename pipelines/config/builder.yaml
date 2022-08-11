@@ -10,7 +10,7 @@ spec:
     git:
       ref: main
       uri: "https://github.com/redhat-capgemini-exchange/devsecops-config"
-    contextDir: pipelines/image-builder
+    contextDir: image-builder
     type: Git
   strategy:
     type: Docker
