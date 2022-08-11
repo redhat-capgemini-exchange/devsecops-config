@@ -1,6 +1,6 @@
 # devsecops-config
 
-This is a generic implementation of a GitOps application delivery workflow on Red Hat OpenShift.
+This is a generic implementation of a GitOps workflow for secure, revision and audit-proof application delivery on Red Hat OpenShift.
 
 It uses several technologies such as:
 
@@ -10,7 +10,7 @@ It uses several technologies such as:
 * Red Hat Quay Container Security Operator
 
 
-To support hybrid-cloud and multi-cluster deployments, additional management tools can be added:
+To support hybrid-cloud and multi-cluster deployments, additional tools can be added:
 
 * Red Hat OpenShift Advanced Cluster Manager for Kubernetes
 * Red Hat OpenShift Advanced Cluster Security for Kubernetes
@@ -22,12 +22,14 @@ The implementation assumes a [Gitflow](https://www.atlassian.com/git/tutorials/c
 
 ![GitOps application delivery workflow](docs/gitops_architecture.png)
 
+
 ## Preparation
 
+The following section explains how to install and configure the operators and how to to deploy the build- and rollout pipelines.
 
 ### Operators
 
-See [operator/README.md](operators/README.md) for a step-by-step guid how to install and configure the operators used in the devsecops-config setup.
+See [operator/README.md](operators/README.md) for a step-by-step guid how to install and configure the operators used in the setup.
 
 ### Deploy the Pipelines
 
@@ -97,3 +99,8 @@ oc get route openshift-gitops-server -n openshift-gitops
 Updating repo files and creating pull request requires a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) for your GitHub account.
 
 **Note:** currently only GitHub is supported. Using a *different flavour* of git (e.g. GitLab, Gitea etc.) would require modification of some of the pipeline steps.
+
+
+### GitHub webhooks
+
+TBD
